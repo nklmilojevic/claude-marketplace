@@ -11,7 +11,7 @@
     {
       "name": "spec-interviewer",
       "description": "Interview users about their specifications to uncover hidden requirements, edge cases, and tradeoffs",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "author": {
         "name": "Nikola Milojević"
       },
@@ -20,8 +20,20 @@
         "repo": "nklmilojevic/claude-spec-interviewer"
       },
       "category": "developer-tools",
-      "tags": ["specification", "interview", "requirements", "planning"],
-      "keywords": ["spec", "specification", "interview", "requirements", "edge-cases", "planning"]
+      "tags": [
+        "specification",
+        "interview",
+        "requirements",
+        "planning"
+      ],
+      "keywords": [
+        "spec",
+        "specification",
+        "interview",
+        "requirements",
+        "edge-cases",
+        "planning"
+      ]
     }
   ]
 }
