@@ -17,20 +17,44 @@
       },
       "source": "./plugins/plugin-development",
       "category": "developer-tools",
-      "tags": ["development", "plugins", "scaffold", "validation", "tools"],
-      "keywords": ["claude-code", "plugins", "developer-tools", "scaffold", "validation"]
+      "tags": [
+        "development",
+        "plugins",
+        "scaffold",
+        "validation",
+        "tools"
+      ],
+      "keywords": [
+        "claude-code",
+        "plugins",
+        "developer-tools",
+        "scaffold",
+        "validation"
+      ]
     },
     {
       "name": "spec-interviewer",
       "description": "Interview users about their specifications to uncover hidden requirements, edge cases, and tradeoffs",
       "version": "1.0.0",
       "author": {
-        "name": "nkl"
+        "name": "Nikola Milojević"
       },
       "source": "./plugins/spec-interviewer",
       "category": "developer-tools",
-      "tags": ["specification", "interview", "requirements", "planning"],
-      "keywords": ["spec", "specification", "interview", "requirements", "edge-cases", "planning"]
+      "tags": [
+        "specification",
+        "interview",
+        "requirements",
+        "planning"
+      ],
+      "keywords": [
+        "spec",
+        "specification",
+        "interview",
+        "requirements",
+        "edge-cases",
+        "planning"
+      ]
     }
   ]
 }
