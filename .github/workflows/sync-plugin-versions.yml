@@ -69,14 +69,24 @@ jobs:
               jq ".plugins[$i].version = \"$LATEST_VERSION\"" "$MARKETPLACE_FILE" > tmp.json && mv tmp.json "$MARKETPLACE_FILE"
 
               UPDATES_FOUND=true
-              UPDATED_PLUGINS="$UPDATED_PLUGINS\n- $PLUGIN_NAME: $CURRENT_VERSION → $LATEST_VERSION"
+              if [ -n "$UPDATED_PLUGINS" ]; then
+                UPDATED_PLUGINS="$UPDATED_PLUGINS, $PLUGIN_NAME ($CURRENT_VERSION -> $LATEST_VERSION)"
+              else
+                UPDATED_PLUGINS="$PLUGIN_NAME ($CURRENT_VERSION -> $LATEST_VERSION)"
+              fi
             else
               echo "  Already up to date"
             fi
           done
 
           echo "updates_found=$UPDATES_FOUND" >> $GITHUB_OUTPUT
-          echo -e "updated_plugins=$UPDATED_PLUGINS" >> $GITHUB_OUTPUT
+
+          # Use heredoc for multiline-safe output
+          {
+            echo "updated_plugins<<EOF"
+            echo "$UPDATED_PLUGINS"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
         if: steps.check-versions.outputs.updates_found == 'true'
@@ -86,7 +96,7 @@ jobs:
           commit-message: "chore: update plugin versions"
           title: "chore: update plugin versions"
           body: |
-            Automated plugin version updates detected:
+            Automated plugin version updates:
 
             ${{ steps.check-versions.outputs.updated_plugins }}
 
