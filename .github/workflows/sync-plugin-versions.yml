@@ -1,0 +1,95 @@
+name: Sync Plugin Versions
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Every hour
+  workflow_dispatch:  # Manual trigger
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync-versions:
+    name: Check and Update Plugin Versions
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup jq
+        uses: dcarbone/install-jq-action@v3
+
+      - name: Check for version updates
+        id: check-versions
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Checking plugin versions..."
+
+          MARKETPLACE_FILE=".claude-plugin/marketplace.json"
+          UPDATES_FOUND=false
+          UPDATED_PLUGINS=""
+
+          # Get all plugins with GitHub sources
+          PLUGIN_COUNT=$(jq '.plugins | length' "$MARKETPLACE_FILE")
+
+          for ((i=0; i<$PLUGIN_COUNT; i++)); do
+            # Check if source is a GitHub repo
+            SOURCE_TYPE=$(jq -r ".plugins[$i].source.source // \"local\"" "$MARKETPLACE_FILE")
+
+            if [ "$SOURCE_TYPE" != "github" ]; then
+              continue
+            fi
+
+            PLUGIN_NAME=$(jq -r ".plugins[$i].name" "$MARKETPLACE_FILE")
+            REPO=$(jq -r ".plugins[$i].source.repo" "$MARKETPLACE_FILE")
+            CURRENT_VERSION=$(jq -r ".plugins[$i].version // \"0.0.0\"" "$MARKETPLACE_FILE")
+
+            echo "Checking $PLUGIN_NAME ($REPO)..."
+            echo "  Current version: $CURRENT_VERSION"
+
+            # Get latest release from GitHub
+            LATEST_RELEASE=$(gh api "repos/$REPO/releases/latest" --jq '.tag_name' 2>/dev/null || echo "")
+
+            if [ -z "$LATEST_RELEASE" ]; then
+              echo "  No releases found, skipping..."
+              continue
+            fi
+
+            # Remove 'v' prefix if present
+            LATEST_VERSION="${LATEST_RELEASE#v}"
+            echo "  Latest version: $LATEST_VERSION"
+
+            if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
+              echo "  Update available: $CURRENT_VERSION -> $LATEST_VERSION"
+
+              # Update version in marketplace.json
+              jq ".plugins[$i].version = \"$LATEST_VERSION\"" "$MARKETPLACE_FILE" > tmp.json && mv tmp.json "$MARKETPLACE_FILE"
+
+              UPDATES_FOUND=true
+              UPDATED_PLUGINS="$UPDATED_PLUGINS\n- $PLUGIN_NAME: $CURRENT_VERSION → $LATEST_VERSION"
+            else
+              echo "  Already up to date"
+            fi
+          done
+
+          echo "updates_found=$UPDATES_FOUND" >> $GITHUB_OUTPUT
+          echo -e "updated_plugins=$UPDATED_PLUGINS" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        if: steps.check-versions.outputs.updates_found == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update plugin versions"
+          title: "chore: update plugin versions"
+          body: |
+            Automated plugin version updates detected:
+
+            ${{ steps.check-versions.outputs.updated_plugins }}
+
+            This PR was automatically created by the sync-plugin-versions workflow.
+          branch: auto-update-plugin-versions
+          delete-branch: true

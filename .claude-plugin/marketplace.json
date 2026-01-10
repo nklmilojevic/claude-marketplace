@@ -1,7 +1,7 @@
 {
   "name": "nkl-plugins",
   "owner": {
-    "name": "nkl"
+    "name": "Nikola Milojević"
   },
   "metadata": {
     "description": "Claude Code plugins for development workflows",
@@ -9,52 +9,19 @@
   },
   "plugins": [
     {
-      "name": "plugin-development",
-      "description": "Assist with Claude Code plugin development: scaffold, validate, review, and team-ready distribution",
-      "version": "1.3.0",
-      "author": {
-        "name": "Ivan Magda"
-      },
-      "source": "./plugins/plugin-development",
-      "category": "developer-tools",
-      "tags": [
-        "development",
-        "plugins",
-        "scaffold",
-        "validation",
-        "tools"
-      ],
-      "keywords": [
-        "claude-code",
-        "plugins",
-        "developer-tools",
-        "scaffold",
-        "validation"
-      ]
-    },
-    {
       "name": "spec-interviewer",
       "description": "Interview users about their specifications to uncover hidden requirements, edge cases, and tradeoffs",
       "version": "1.0.0",
       "author": {
         "name": "Nikola Milojević"
       },
-      "source": "./plugins/spec-interviewer",
+      "source": {
+        "source": "github",
+        "repo": "nklmilojevic/claude-spec-interviewer"
+      },
       "category": "developer-tools",
-      "tags": [
-        "specification",
-        "interview",
-        "requirements",
-        "planning"
-      ],
-      "keywords": [
-        "spec",
-        "specification",
-        "interview",
-        "requirements",
-        "edge-cases",
-        "planning"
-      ]
+      "tags": ["specification", "interview", "requirements", "planning"],
+      "keywords": ["spec", "specification", "interview", "requirements", "edge-cases", "planning"]
     }
   ]
 }
